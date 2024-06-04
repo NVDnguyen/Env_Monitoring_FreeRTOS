@@ -33,5 +33,5 @@
 #endif
 ```
 
-## References
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/UgbqH6cSpxk&t)](https://www.youtube.com/watch?v=UgbqH6cSpxk&t=15s&ab_channel=TEK4VN)
+## References -cre
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/UgbqH6cSpxk/0.jpg)](https://www.youtube.com/watch?v=UgbqH6cSpxk)
