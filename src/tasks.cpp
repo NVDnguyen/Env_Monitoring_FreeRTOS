@@ -3,7 +3,6 @@
 #include "config.h"
 #include "wifi_manager.h"
 #include "data_config.h"
-#include "data_analyze.h"
 extern QueueHandle_t xDataQ;         // main.cpp
 extern QueueHandle_t xAnalysisDataQ; // main.cpp
 extern PubSubClient client;
