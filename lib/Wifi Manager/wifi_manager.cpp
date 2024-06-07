@@ -1,8 +1,5 @@
-
 #include "wifi_manager.h"
 #include "data_config.h"
-#include "web.h"
-#include "captive_req.h"
 WiFiManager::WiFiManager() : server(80) {}
 
 bool WiFiManager::begin()
@@ -20,9 +17,7 @@ void WiFiManager::setupAP()
     WiFi.softAPConfig(IPAddress(192, 168, 1, 32), IPAddress(192, 168, 1, 1), IPAddress(255, 255, 255, 0));
 
     // Cấu hình DNSServer để chuyển hướng tất cả các yêu cầu đến IP của ESP32
-    dnsServer.start(53, "*", IPAddress(192, 168, 1, 32));
-
-    server.addHandler(new CaptiveRequestHandler()).setFilter(ON_AP_FILTER); // only when requested from AP
+    dnsServer.start(53, "esp32.local", IPAddress(192, 168, 1, 32));
 
     server.on("/", HTTP_GET, std::bind(&WiFiManager::handleRoot, this, std::placeholders::_1));
     server.on("/save", HTTP_POST, std::bind(&WiFiManager::handleSave, this, std::placeholders::_1));
@@ -41,14 +36,9 @@ void WiFiManager::handleSave(AsyncWebServerRequest *request)
         String ssid = request->getParam("ssid", true)->value();
         String password = request->getParam("password", true)->value();
 
-        extern SemaphoreHandle_t xMutex;
-        if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE)
-        {
-            // Save in memory
-            DataConfig &dataCF = DataConfig::getInstance();
-            dataCF.updateWifiConfig(ssid, password);
-            xSemaphoreGive(xMutex);
-        }
+        // Save in memory
+        DataConfig &dataCF = DataConfig::getInstance();
+        dataCF.updateWifiConfig(ssid, password);
 
         request->send(200, "text/html", "WiFi credentials saved. Restarting..." + ssid + ".." + password);
         // Optionally, restart the ESP here
@@ -76,4 +66,3 @@ void WiFiManager::stop()
     // Tắt Access Point
     WiFi.softAPdisconnect(true);
 }
-

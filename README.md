@@ -1,9 +1,6 @@
 # Smart Irrigation System
 ## Introduction 
-- Dự án tưới tiêu thông minh
-- Mức độ:  mini project
-- Mục tiêu:  ESP301m
-- Mức độ  hoàn thành : 50%
+- FreeRTOS project
 
 ## Getting Started
 - [PlatformIO in VSCode](https://docs.platformio.org/en/latest/integration/ide/vscode.html)
@@ -35,3 +32,5 @@
 
 ## References -cre
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/UgbqH6cSpxk/0.jpg)](https://www.youtube.com/watch?v=UgbqH6cSpxk)
+
+<img src="include\image.png" alt="Description of the image">

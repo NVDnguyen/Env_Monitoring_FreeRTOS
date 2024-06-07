@@ -20,18 +20,32 @@ void readSensor(void *params)
 
     while (1)
     {
-        Serial.println("readSensor: Running");
+
         SensorData data;
-        data.soilMoisture = map(analogRead(SOIL_PIN), 0, 4095, 0, 100);
-        data.humidity = dht.readHumidity();
-        data.temperature = dht.readTemperature();
-        data.statusPump = digitalRead(STATUS_REALY_PIN);
+        data.soilMoisture = (int)map(analogRead(SOIL_PIN), 0, 4095, 0, 100);
+        data.humidity = (int)dht.readHumidity();
+        data.temperature = (int)dht.readTemperature();
 
         if (!isnan(data.humidity) && !isnan(data.temperature))
         {
-            if (xQueueSend(xDataQ, &data, portMAX_DELAY) != pdPASS)
+            if (xQueueSend(xDataQ, &data, pdMS_TO_TICKS(2000)) != pdPASS)
             {
-                Serial.println("Failed to send data to queue.");
+                SensorData data1;
+                if (xQueueReceive(xDataQ, &data1, portMAX_DELAY) == pdPASS)
+                {
+                    Serial.print("Failed:");
+                    Serial.print("Hum: ");
+                    Serial.print(data1.humidity);
+                    Serial.print("| Temp: ");
+                    Serial.print(data1.temperature);
+                    Serial.print("| Soil: ");
+                    Serial.print(data1.soilMoisture);
+                    Serial.println();
+                }
+            }
+            else
+            {
+                Serial.println("readSensor: Running");
             }
         }
         else
@@ -81,7 +95,7 @@ void connectToWifi(void *params)
                 vTaskResume(xHandleClient);
             }
         }
-        Serial.println("connectToWifi: Running");
+        Serial.println("                   connectToWifi: Running");
 
         // Delay to avoid busy-waiting
         vTaskDelay(pdMS_TO_TICKS(2000));
@@ -101,8 +115,6 @@ void printData(void *params)
             Serial.print(data.temperature);
             Serial.print("| Soil: ");
             Serial.print(data.soilMoisture);
-            Serial.print("| Pump: ");
-            Serial.print(data.statusPump);
         }
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
@@ -140,6 +152,31 @@ void upCloud(void *params)
             }
             client.loop();
 
+            // publish status per 1,5s
+            uint8_t xDelay = 0;
+
+            while (xDelay < 6)
+            {
+                bool statusPump = digitalRead(STATUS_PIN);
+                String p = "{";
+                p += "\"statusPump\":";
+                p += (int)statusPump;
+                p += "}";
+
+                char att[30];
+                p.toCharArray(att, 30);
+                if (client.publish("v1/devices/me/telemetry", att))
+                {
+                    Serial.println("                                 upStatus Control:" + (String)statusPump);
+                }
+                else
+                {
+                    Serial.println("Failed to publish data");
+                }
+                vTaskDelay(pdMS_TO_TICKS(1000));
+                xDelay++;
+            }
+
             SensorData data;
             if (xQueueReceive(xDataQ, &data, pdMS_TO_TICKS(10000)) == pdPASS) // wait 5 sensorData available in queue
             {
@@ -152,9 +189,6 @@ void upCloud(void *params)
                 payload += ",";
                 payload += "\"soilMoisture\":";
                 payload += data.soilMoisture;
-                payload += ",";
-                payload += "\"statusPump\":";
-                payload += data.statusPump;
                 payload += "}";
 
                 char attributes[100];
@@ -163,7 +197,7 @@ void upCloud(void *params)
                 {
                     // Serial.print("Published data: ");
                     // Serial.println(payload);
-                    Serial.println("upCloud:    Good");
+                    Serial.println("                                                          upCloud:    Good");
                 }
                 else
                 {
@@ -173,9 +207,10 @@ void upCloud(void *params)
         }
         else
         {
+            vTaskDelay(pdMS_TO_TICKS(10000));
             vTaskResume(xWifiTask);
         }
-        vTaskDelay(pdMS_TO_TICKS(6000));
+        // vTaskDelay(pdMS_TO_TICKS(6000));
     }
 }
 
@@ -198,7 +233,8 @@ void handleClient(void *params)
         }
         else
         {
-            Serial.println("handleClient: Running");
+            vTaskDelay(pdMS_TO_TICKS(10));
+            // Serial.println("handleClient: Running");
         }
     }
 }
@@ -207,37 +243,26 @@ void analyzeData(void *params)
 {
     //
 }
-void controlCenter(void *params) // recieve cloud and manual control by button
+void controlCenter(void *params) // manual control by button
 {
-    // if (WiFi.isConnected() && client.connected())
-    // {
-    //     Serial.println("control center running...");
-    //     client.setCallback(listenRPC);
-    // }
 
     while (1)
     {
-        static bool lastState = HIGH;
-        static unsigned long lastDebounceTime = 0;
-        unsigned long debounceDelay = 50;
-        bool currentState = digitalRead(BUTTON_PIN);
-        if (currentState != lastState)
+        bool bttState = digitalRead(BUTTON_PIN);
+        bool relayState = digitalRead(STATUS_PIN);
+
+        if (bttState)
         {
-            lastDebounceTime = millis();
-        }
-        if ((millis() - lastDebounceTime) > debounceDelay)
-        {
-            if (currentState != lastState)
+            vTaskDelay(pdMS_TO_TICKS(80));
+            while (digitalRead(BUTTON_PIN) != 0)
             {
-                lastState = currentState;
-                if (currentState == LOW)
-                {
-                    digitalWrite(RELAY_PIN, HIGH);
-                }
+                vTaskDelay(pdMS_TO_TICKS(50));
             }
+            digitalWrite(RELAY_PIN, !relayState);
         }
-        digitalWrite(RELAY_PIN, LOW);
-        vTaskDelay(pdMS_TO_TICKS(6000));
+        Serial.println("                                                                              button state: " + (String)bttState);
+
+        vTaskDelay(pdMS_TO_TICKS(500));
     }
 }
 void listenRPC(char *topic, byte *payload, unsigned int length)
@@ -262,6 +287,10 @@ void listenRPC(char *topic, byte *payload, unsigned int length)
     if (strcmp(method, "setState") == 0)
     {
         int status = jsonDoc["params"];
+        //int relayStatus = digitalRead(STATUS_PIN);
         digitalWrite(RELAY_PIN, status);
+        // Serial.println("Relay:"+(String)status);
     }
+    // int relayStatus = digitalRead(STATUS_PIN);
+    // digitalWrite(RELAY_PIN, !relayStatus);
 }

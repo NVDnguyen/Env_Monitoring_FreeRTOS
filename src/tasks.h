@@ -5,15 +5,14 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <Preferences.h>
-#include "BluetoothSerial.h"
 #include <ArduinoJson.h>
 
 
 struct SensorData {
-    float humidity;
-    float temperature;
-    float soilMoisture;
-    int statusPump;
+    int humidity;
+    int temperature;
+    int soilMoisture;
+
     // String toString() { return "Hum: " + String(humidity) + " | Temp: " + String(temperature) + " | Soil: " + String(soilMoisture) + " | Status: " + String(statusPump); }
 };
 
