@@ -37,7 +37,7 @@
 <img src="asset\image.png" alt="Description of the image">
 
 ## Schematic
-[![Schematic](asset\image_schematic.png)](https://www.flux.ai/hihi12/main-white-universal-remote?editor=schematic&embed=1)
+[![Schematic](asset/image_schematic.png)](https://www.flux.ai/hihi12/main-white-universal-remote?editor=schematic&embed=1)
 
 ## References 
 https://www.youtube.com/watch?v=UgbqH6cSpxk
