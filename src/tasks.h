@@ -11,9 +11,8 @@
 struct SensorData {
     int humidity;
     int temperature;
-    int soilMoisture;
+    int water;
 
-    // String toString() { return "Hum: " + String(humidity) + " | Temp: " + String(temperature) + " | Soil: " + String(soilMoisture) + " | Status: " + String(statusPump); }
 };
 
 

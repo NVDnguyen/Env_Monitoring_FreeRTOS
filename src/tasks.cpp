@@ -22,7 +22,7 @@ void readSensor(void *params)
     {
 
         SensorData data;
-        data.soilMoisture = (int)map(analogRead(SOIL_PIN), 0, 4095, 0, 100);
+        data.water = (int)map(analogRead(WATER_PIN), 0, 4095, 0, 100);
         data.humidity = (int)dht.readHumidity();
         data.temperature = (int)dht.readTemperature();
 
@@ -38,8 +38,8 @@ void readSensor(void *params)
                     Serial.print(data1.humidity);
                     Serial.print("| Temp: ");
                     Serial.print(data1.temperature);
-                    Serial.print("| Soil: ");
-                    Serial.print(data1.soilMoisture);
+                    Serial.print("| Water: ");
+                    Serial.print(data1.water);
                     Serial.println();
                 }
             }
@@ -113,8 +113,8 @@ void printData(void *params)
             Serial.print(data.humidity);
             Serial.print("| Temp: ");
             Serial.print(data.temperature);
-            Serial.print("| Soil: ");
-            Serial.print(data.soilMoisture);
+            Serial.print("| Water: ");
+            Serial.print(data.water);
         }
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
@@ -187,8 +187,8 @@ void upCloud(void *params)
                 payload += "\"humidity\":";
                 payload += data.humidity;
                 payload += ",";
-                payload += "\"soilMoisture\":";
-                payload += data.soilMoisture;
+                payload += "\"water\":";
+                payload += data.water;
                 payload += "}";
 
                 char attributes[100];
@@ -253,16 +253,16 @@ void controlCenter(void *params) // manual control by button
 
         if (bttState)
         {
-            vTaskDelay(pdMS_TO_TICKS(80));
+            vTaskDelay(pdMS_TO_TICKS(10));
             while (digitalRead(BUTTON_PIN) != 0)
             {
                 vTaskDelay(pdMS_TO_TICKS(50));
             }
             digitalWrite(RELAY_PIN, !relayState);
         }
-        Serial.println("                                                                              button state: " + (String)bttState);
+        //Serial.println("                                                                              button state: " + (String)bttState);
 
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
 void listenRPC(char *topic, byte *payload, unsigned int length)

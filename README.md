@@ -1,13 +1,22 @@
-# Smart Irrigation System
+# Environmental monitoring
 ## Introduction 
-- FreeRTOS project
+
+This project provides users with real-time weather and environmental data while enabling remote control of devices.
+
+FreeRTOS project
+- Task 1: Read Sensor
+- Task 2: Control device
+- Task 3: Connect to Wifi
+- Task 4: Web Server for config wifi
+- Task 5: Cloud
+
 
 ## Getting Started
 - [PlatformIO in VSCode](https://docs.platformio.org/en/latest/integration/ide/vscode.html)
 - [ThingsBoard](https://thingsboard.io/docs/getting-started-guides/helloworld/)
 - ESP Wroom 32
-- DHT11, Soil Moisture Sensor, Button, Relay, Pump, other.
-- Pin Connection : 
+- DHT11, Water Sensor, Button, Relay, other.
+- Pin Connection ```config.h```: 
 ```c
 #ifndef CONFIG_H
 #define CONFIG_H
@@ -15,7 +24,7 @@
 /*Sensor*/
 #define DHTPIN 15
 #define DHTTYPE DHT11
-#define SOIL_PIN 34
+#define WATER_PIN 34
 
 #define RELAY_PIN 32
 #define STATUS_PIN 33
@@ -38,6 +47,9 @@
 
 ## Schematic
 [![Schematic](asset\image_schematic.png)](https://www.flux.ai/hihi12/main-white-universal-remote?editor=schematic&embed=1)
+
+## Demo
+[![Demo](https://img.youtube.com/vi/JxpdZ9Qpn0o/0.jpg)](https://youtu.be/JxpdZ9Qpn0o)
 
 ## References 
 https://www.youtube.com/watch?v=UgbqH6cSpxk

@@ -4,7 +4,7 @@
 /*Sensor*/
 #define DHTPIN 15
 #define DHTTYPE DHT11
-#define SOIL_PIN 34
+#define WATER_PIN 34
 
 #define RELAY_PIN 32
 #define STATUS_PIN 33
@@ -18,6 +18,6 @@
 #define MQTT_SERVER "mqtt.thingsboard.cloud"
 #define MQTT_PORT 1883
 
-#define TOKEN ""
+#define TOKEN "F0YhnhbPSiahMsxCspUv"
 
 #endif

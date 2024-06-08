@@ -28,7 +28,7 @@ void setup()
 {
     Serial.begin(115200);
     // Set pin mode
-    pinMode(SOIL_PIN, INPUT);
+    pinMode(WATER_PIN, INPUT);
     pinMode(BUTTON_PIN, INPUT); // Signal to manually control the PUMP
     pinMode(STATUS_PIN, INPUT); // status PUMP
     pinMode(RELAY_PIN, OUTPUT);       // CONTROL PUMP
@@ -47,7 +47,7 @@ void setup()
     xTaskCreatePinnedToCore(controlCenter, "Control Manual", 2048, NULL, 4, &xControlCenter, 1);
     // Core 0
     xTaskCreatePinnedToCore(connectToWifi, "Wifi", 4096, NULL, 2, &xWifiTask, 0);
-    xTaskCreatePinnedToCore(handleClient, "Web", 4096, NULL, 3, &xHandleClient, 0);
+    xTaskCreatePinnedToCore(handleClient, "Web", 4096, NULL, 4, &xHandleClient, 0);
     xTaskCreatePinnedToCore(upCloud, "Cloud", 6000, NULL, 1, &xCloudTask, 0);
     //xTaskCreatePinnedToCore(analyzeData, "Sleep Manager", 4000, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
 }
