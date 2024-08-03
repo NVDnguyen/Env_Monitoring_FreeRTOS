@@ -51,6 +51,4 @@ FreeRTOS project
 ## Demo
 [![Demo](https://img.youtube.com/vi/JxpdZ9Qpn0o/0.jpg)](https://youtu.be/JxpdZ9Qpn0o)
 
-## References 
-https://www.youtube.com/watch?v=UgbqH6cSpxk
 
